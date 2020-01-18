@@ -1,0 +1,23 @@
+* {
+    text-decoration: none;
+}
+
+a {
+    color: white;
+}
+
+.strength-weak::-webkit-progress-value {
+    background-color: #f25f5c;
+}
+
+.strength-fair::-webkit-progress-value {
+    background-color: #ffe066;
+}
+
+.strength-good::-webkit-progress-value {
+    background-color: #247ba0;
+}
+
+.strength-strong::-webkit-progress-value {
+    background-color: #70c1b3;
+}
