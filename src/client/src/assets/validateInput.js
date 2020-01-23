@@ -1,44 +1,23 @@
-const upper = ["Ą", "Ć", "Ę", "Ł", "Ń", "Ó", "Ś", "Ź", "Ż"];
-const lower = ["ą", "ć", "ę", "ł", "ń", "ó", "ś", "ź", "ż"];
+const namePattern = /^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]*$/;
+const loginPattern = /[A-Za-z0-9]+$/;
 
 export const validateName = input => {
-    if (input === "") return false;
-
-    if (input.length === 1) {
-        return 'Name must be at least 2 characters long!';
-    }
-
-    if (!upper.includes(input[0]) && (input[0].charCodeAt() < "A".charCodeAt() || input[0].charCodeAt() > "Z".charCodeAt())) {
-        return 'First letter must be uppercase!';
-    }
-
-    for (const c of input.slice(1, input.length)) {
-        if (!lower.includes(c) && (c.charCodeAt() < "a".charCodeAt() || c.charCodeAt() > "z".charCodeAt())) {
-            return 'The rest must be lowercase letters!';
-        }
-    }
-
-    return false;
+    if (input.length < 2 || input.length > 100 || !namePattern.test(input)) return false;
+    return true;
 };
 
 export const validatePassword = input => {
-    if (input === "") return false;
-    
-    if (input.length < 8) return 'Password must be at least 8-characters long!';
-    
-    for (const c of input) 
-        if (
-            (c.charCodeAt() < "A".charCodeAt() || c.charCodeAt() > "Z".charCodeAt()) && 
-            (c.charCodeAt() < "a".charCodeAt() || c.charCodeAt() > "z".charCodeAt()) && 
-            (c.charCodeAt() < "0".charCodeAt() || c.charCodeAt() > "9".charCodeAt())
-        ) 
-            return 'Password should be made up of letters and digits.';
+    if (input.length < 8 || input.length > 1024 || passEntropy(input) < 0.75) return false;
+    return true; 
+};
 
-    return false;
+export const validateLogin = input => {
+    if (input.length < 4 || input.length > 20 || !loginPattern.test(input)) return false;
+    return true;
 };
 
 export const passEntropy = pass => {
-    if (!pass) return 0;
+    if (pass.length === 0) return 0;
     const asciiCodes = new Array(255);
     asciiCodes.fill(0);
     for (let c of pass) asciiCodes[c.charCodeAt(0)]++;
@@ -48,4 +27,11 @@ export const passEntropy = pass => {
         if (p !== 0) entropy -= p * Math.log10(p);
     }
     return entropy;
+};
+
+export const colorByEntropy = entropy => {
+    if (entropy < 0.25) return 'weak';
+    if (entropy >= 0.25 && entropy < 0.5) return 'fair';
+    if (entropy >= 0.5 && entropy < 0.75) return 'good';
+    return 'strong';
 };

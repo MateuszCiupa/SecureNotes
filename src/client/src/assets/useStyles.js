@@ -7,6 +7,7 @@ export default makeStyles(theme => ({
         padding: theme.spacing(2),
         display: 'flex',
         flexDirection: 'column',
+        position: 'relative'
     },
     form: {
         width: '100%',
@@ -23,7 +24,6 @@ export default makeStyles(theme => ({
         justifyContent: 'space-between'
     },
     text_field: {
-        height: '68px',
         marginBottom: theme.spacing(1),
     },
     menuButton: {
@@ -52,4 +52,4 @@ export default makeStyles(theme => ({
         maxWidth: 700,
         textAlign: 'center'
     }
-}))
+}));

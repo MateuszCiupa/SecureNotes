@@ -6,6 +6,11 @@ a {
     color: white;
 }
 
+.password-strength-meter-progress {
+    -webkit-appearance: none;
+    appearance: none;
+}
+
 .strength-weak::-webkit-progress-value {
     background-color: #f25f5c;
 }

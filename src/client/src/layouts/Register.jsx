@@ -1,11 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Paper, Typography, TextField, Button, Collapse } from '@material-ui/core';
+import { Paper, Typography, TextField, Button, Collapse, IconButton } from '@material-ui/core';
+import CloseIcon from '@material-ui/icons/Close';
 import { Alert } from '@material-ui/lab';
 import useStyles from 'assets/useStyles';
 import { connect } from 'react-redux';
 import { register } from 'redux/modules/session';
-import { clearErrors } from 'redux/modules/error';
-import { passEntropy } from 'assets/validateInput';
+import { clearErrors, receiveErrors } from 'redux/modules/error';
+import { 
+    passEntropy, 
+    colorByEntropy, 
+    validateLogin, 
+    validateName, 
+    validatePassword 
+} from 'assets/validateInput';
 
 const mapStateToProps = ({ error, session }) => ({ 
     error,
@@ -14,11 +21,24 @@ const mapStateToProps = ({ error, session }) => ({
 
 const mapDispatchToProps = dispatch => ({ 
     register: user => dispatch(register(user)),
-    clearErrors: () => dispatch(clearErrors())
+    clearErrors: () => dispatch(clearErrors()),
+    receiveErrors: message => dispatch(receiveErrors({ message }))
 });
 
-const Register = ({ error, register, clearErrors, session, history }) => {
+const Register = ({ 
+    error, 
+    register, 
+    clearErrors, 
+    session, 
+    history,
+    receiveErrors
+}) => {
     useEffect(() => {
+        if (error) setOpen(true);
+    }, [error]);
+
+    useEffect(() => {
+        setOpen(false);
         clearErrors();
     }, [clearErrors]);
 
@@ -28,38 +48,41 @@ const Register = ({ error, register, clearErrors, session, history }) => {
 
     const classes = useStyles();
 
+    const [open, setOpen] = useState(false);
     const [passScore, setPassScore] = useState(0);
     const [firstname, setFirstname] = useState('');
     const [lastname, setLastname] = useState('');
     const [login, setLogin] = useState('');
     const [password, setPassword] = useState('');
-    const [email, setEmail] = useState('');
     const [repeatPass, setRepeatPass] = useState('');
     const [passErr, setPassErr] = useState(false);
 
     const handleSubmit = event => {
         event.preventDefault();
-        register({
-            firstname,
-            lastname,
-            login,
-            password,
-            email
-        });
+        
+        if (
+            validateName(firstname) && 
+            validateName(lastname) && 
+            validateLogin(login) && 
+            validatePassword(password) && 
+            !passErr
+        ) {
+            register({ firstname, lastname, login, password });
+        } else {
+            receiveErrors('Correct your input.');
+            setOpen(true);
+        }
     };
 
     const handleReset = () => {
         clearErrors();
+        setPassScore(0);
+        setRepeatPass('');
+        setPassErr(false);
         setFirstname('');
         setLastname('');
         setLogin('');
         setPassword('');
-        setEmail('');
-        setRepeatPass({
-            value: '',
-            error: false,
-            helperText: ''
-        });
     };
 
     return (
@@ -68,9 +91,23 @@ const Register = ({ error, register, clearErrors, session, history }) => {
                 Sign Up
             </Typography>
 
-            <Collapse in>
+            <Collapse in={open} style={{ position: 'absolute', right: 20, width: 'auto' }}>
+                <Alert
+                    severity="error"
+                    action={
+                        <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => setOpen(false)}
+                        >
+                            <CloseIcon fontSize="inherit" />
+                        </IconButton>
+                    } 
+                >
+                    {error}
+                </Alert>
             </Collapse>
-            <Alert onClose={() => {}}>Hejooo</Alert>
 
             <form className={classes.form}>
                 <TextField
@@ -98,8 +135,8 @@ const Register = ({ error, register, clearErrors, session, history }) => {
                     value={login}
                     label="Login"
                     margin="normal"
+                    helperText="Possible characters: A-Z, a-z or 0-9, min 4 and max 20 characters long."
                     onChange={e => setLogin(e.target.value)}
-                    helperText=""
                 />
 
                 <TextField
@@ -109,31 +146,36 @@ const Register = ({ error, register, clearErrors, session, history }) => {
                     label="Password"
                     margin="normal"
                     type="password"
+                    helperText="At least 'good', min 8 and max 1024 characters long."
                     onChange={e => {
                         setPassword(e.target.value)
                         setPassScore(passEntropy(e.target.value))
                     }}
                 />
 
-                <progress
-                    className={`password-strength-meter-progr`}
-                    value={passScore}
-                    max={1} 
-                />
+                <div
+                    style={{ height: '30px' }}
+                >
+                    <progress
+                        style={{ width: '100%' }}
+                        className={`password-strength-meter-progress strength-${colorByEntropy(passScore)}`}
+                        value={passScore}
+                        max={1} 
+                    />
 
-                <Typography variant="subtitle1" >
-                    {password && (
-                        <>
-                            <strong>Password strength:</strong>
-
-                        </>
-                    )}
-                </Typography>
+                    <Typography variant="subtitle2" >
+                        {password && (
+                            <>
+                                <strong>Password strength:</strong> {colorByEntropy(passScore)}
+                            </>
+                        )}
+                    </Typography>
+                </div>
 
                 <TextField
                     required
                     className={classes.text_field}
-                    value={repeatPass.value}
+                    value={repeatPass}
                     label="Repeat password"
                     margin="normal"
                     type="password"
@@ -144,17 +186,6 @@ const Register = ({ error, register, clearErrors, session, history }) => {
                         if (e.target.value !== password) setPassErr(true)
                         else setPassErr(false)
                     }}
-                />
-
-                <TextField
-                    required
-                    className={classes.text_field}
-                    value={email}
-                    label="Email"
-                    margin="normal"
-                    type="email"
-                    helperText={error}
-                    onChange={e => setEmail(e.target.value)}
                 />
 
                 <div className={classes.weird_buttons}>

@@ -5,18 +5,19 @@ const UserSchema = mongoose.Schema({
         type: String,
         required: true,
         min: 2,
-        max: 255
+        max: 100
     },
     lastname: {
         type: String,
         required: true,
         min: 2,
-        max: 255
+        max: 100
     },
     login: {
         type: String,
         required: true,
-        max: 255
+        min: 4,
+        max: 20
     },
     password: {
         type: String,
@@ -27,11 +28,6 @@ const UserSchema = mongoose.Schema({
     date: {
         type: Date,
         default: Date.now
-    },
-    email: {
-        type: String,
-        required: true,
-        max: 1024
     }
 })
 

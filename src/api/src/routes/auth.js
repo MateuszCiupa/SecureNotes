@@ -12,26 +12,20 @@ userRouter.post('/register', async (req, res) => {
     const { error } = registerValidation(req.body);
     if (error) return res.status(400).send(error.details[0]);
 
-    const { firstname, lastname, login, email } = req.body;
-    const user = { firstname, lastname, login, email };
+    const { firstname, lastname, login } = req.body;
+    const user = { firstname, lastname, login };
 
     try {
         const loginExists = await User.findOne({ login });
-        const emailExists = await User.findOne({ email });
-        if (loginExists) return res.status(400).send(parseError(new Error('"login" already exists')));
-        if (emailExists) return res.status(400).send(parseError(new Error('"email" already exists')));
-    } catch(err) {
-        return res.status(500).send(err);
-    }
-    
-    const hashPassword = await bcrypt.hash(req.body.password, 10);
-    user.password = hashPassword;
+        if (loginExists) return res.status(400).send({ message: '"login" already exists' });
 
-    try {
+        const hashPassword = await bcrypt.hash(req.body.password, 10);
+        user.password = hashPassword;
+
         const savedUser = await new User(user).save();
-        res.status(201).send({ user: savedUser._id });
-    } catch(err) {
-        res.status(500).send(err);
+        return res.status(201).send({ user: savedUser._id });
+    } catch (err) {
+        return res.status(500).send(parseError(err));
     }
 });
 
@@ -43,21 +37,21 @@ userRouter.post('/login', async (req, res) => {
     
     try {
         var user = await User.findOne({ login });
-        if (!user) return res.status(401).send(parseError(new Error('"login" or "password" is incorrect')));
+        if (!user) return res.status(401).send({ message: '"login" or "password" is incorrect'});
         const validPass = await bcrypt.compare(password, user.password);
-        if(!validPass) return res.status(401).send(parseError(new Error('"login" or "password" is incorrect')));
-    } catch(err) {
-        return res.status(500).send(err);
+        if (!validPass) return res.status(401).send({ message: '"login" or "password" is incorrect'});
+    } catch (err) {
+        return res.status(500).send(parseError(err));
     }
 
-    const accessToken = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET/*, { expiresIn: '100m' }*/);
+    const accessToken = jwt.sign({ _id: user._id }, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '100m' });
     const refreshToken = jwt.sign({ _id: user._id }, process.env.REFRESH_TOKEN_SECRET);
     const sessionUser = { 
         userId: user._id, 
         firstname: user.firstname, 
         lastname: user.lastname,
         accessToken, 
-        refreshToken 
+        refreshToken
     };
     req.session.user = sessionUser;
     res.send(sessionUser);
@@ -69,17 +63,18 @@ userRouter.get('/find/:userLogin', async (req, res) => {
 
     try {
         const loginExists = await User.findOne({ login: req.params.userLogin });
-        if (loginExists) res.status(400).send(parseError(new Error('"login" already exists')));
+        if (loginExists) res.status(400).send({ message: '"login" already exists' });
         else res.sendStatus(200);
-    } catch(err) {
-        res.status(500).send(err);
+    } catch (err) {
+        res.status(500).send(parseError(err));
     }
 });
 
 userRouter.post('/token', (req, res) => {
     const refreshToken = req.body.token;
     const user = req.session.user;
-    if (!refreshToken || !user) return res.sendStatus(401);
+    if (!user) return res.sendStatus(401);
+    if (!refreshToken) return res.sendStatus(403);
 
     jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET, (err, user) => {
         if (err) return res.sendStatus(403);
@@ -100,7 +95,7 @@ userRouter.delete('/logout', ({ session }, res) => {
         } else {
             throw new Error('Something went wrong');
         }
-    } catch(err) {
+    } catch (err) {
         res.status(422).send(parseError(err));
     }
 });
