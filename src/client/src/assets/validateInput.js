@@ -35,3 +35,11 @@ export const colorByEntropy = entropy => {
     if (entropy >= 0.5 && entropy < 0.75) return 'good';
     return 'strong';
 };
+
+export const validateTitle = input => {
+
+};
+
+export const validateContent = input => {
+
+};

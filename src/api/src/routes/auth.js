@@ -104,4 +104,24 @@ userRouter.get('', ({ session: { user } }, res) => {
     res.send({ user });
 });
 
+userRouter.post('/pass', async ({ session, body }, res) => {
+    try {
+        const user = session.user;
+        if (user) {
+            const { password, newPassword } = body;
+            const userExists = await User.findById(user.userId);
+            if (!userExists) return res.sendStatus(401);
+            const validPass = await bcrypt.compare(password, userExists.password);
+            if (!validPass) return res.status(401).send({ message: "'password' is not correct"});
+            const newHashPassword = await bcrypt.hash(newPassword, 10);
+            await User.findOneAndUpdate({ _id: user.userId }, { password: newHashPassword });
+            return res.sendStatus(200);
+        } else {
+            throw new Error('Something went wrong')
+        }
+    } catch (err) {
+        res.status(422).send(parseError(err))
+    }
+});
+
 export default userRouter;

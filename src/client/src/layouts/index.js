@@ -5,13 +5,13 @@ import Profile from './Profile';
 import ChangeEmail from './ChangeEmail';
 import ChangePassword from './ChangePassword';
 import ResetPassword from './ResetPassword';
-import Posts from './Posts';
+import AddPost from './AddPost';
 
 export { 
     Login, 
     Register, 
     Home,
-    Posts, 
+    AddPost, 
     Profile, 
     ChangeEmail,
     ChangePassword,

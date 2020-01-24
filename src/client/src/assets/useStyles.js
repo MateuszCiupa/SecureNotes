@@ -24,7 +24,7 @@ export default makeStyles(theme => ({
         justifyContent: 'space-between'
     },
     text_field: {
-        marginBottom: theme.spacing(1),
+        marginBottom: theme.spacing(2),
     },
     menuButton: {
         marginRight: theme.spacing(2),
@@ -51,5 +51,11 @@ export default makeStyles(theme => ({
     file_list_item: {
         maxWidth: 700,
         textAlign: 'center'
+    },
+    post_title: {
+        fontSize: 14
+    },
+    post_card: {
+        margin: theme.spacing(1)
     }
 }));

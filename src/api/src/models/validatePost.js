@@ -1,7 +1,6 @@
 import Joi from '@hapi/joi';
 
-const namePattern = /^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]*$/;
-const contentPattern = /[A-Za-z0-9/sĄĆĘŁŃÓŚŹŻąćęłńóśźż,.:'";?()]+$/;
+const contentPattern = /[A-Za-z0-9\sĄĆĘŁŃÓŚŹŻąćęłńóśźż,.:'";?()]+$/;
 
 export default data => (
     Joi.object({
@@ -12,7 +11,7 @@ export default data => (
             .max(2048)
             .required(),
         title: Joi.string()
-            .pattern(namePattern)
+            .pattern(/[A-Za-z0-9\s]+$/)
             .min(2)
             .max(100)
             .required()

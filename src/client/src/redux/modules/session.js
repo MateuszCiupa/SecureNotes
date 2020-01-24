@@ -2,7 +2,7 @@ import * as apiUtil from 'util/session';
 import { receiveErrors } from './error';
 
 export const RECEIVE_CURRENT_USER = 'odas-app/session/RECEIVE_CURRENT_USER';
-const LOGOUT_CURRENT_USER = 'odas-app/session/LOGOUT_CURRENT_USER';
+export const LOGOUT_CURRENT_USER = 'odas-app/session/LOGOUT_CURRENT_USER';
 
 const receiveCurrentUser = user => ({ 
     type: RECEIVE_CURRENT_USER, 

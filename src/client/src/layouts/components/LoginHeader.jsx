@@ -26,22 +26,32 @@ const LoginHeader = ({ session, logout }) => {
                     Hi, {session.firstname}!
                 </Typography>
 
-                <Link to='/profile'>
+                <Link to='/'>
                     <Button
                         className={classes.button} 
                         color="inherit"
                     >
-                        Profile
+                        Home
                     </Button>
                 </Link>
 
-                <Button 
-                    className={classes.button}
-                    variant="contained"
-                    onClick={logout}
-                >
-                    Sign Out
-                </Button>
+                <Link to='/post'>
+                    <Button
+                        className={classes.button} 
+                        color="inherit"
+                    >
+                        Post
+                    </Button>
+                </Link>
+
+                <Link to='/profile'>
+                    <Button
+                        className={classes.button} 
+                        variant="contained"
+                    >
+                        Profile
+                    </Button>
+                </Link>
 
             </Toolbar>
         </AppBar>

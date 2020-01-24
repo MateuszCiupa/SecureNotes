@@ -3,6 +3,7 @@ import session from 'express-session';
 import mongoose from 'mongoose';
 import connectStore from 'connect-mongo';
 import userRouter from './routes/auth';
+import postRouter from './routes/post';
 require('dotenv').config();
 
 const {
@@ -47,6 +48,7 @@ const {
         const apiRouter = express.Router();
         app.use('/api', apiRouter);
         apiRouter.use('/user', userRouter);
+        apiRouter.use('/post', postRouter);
 
         app.listen(PORT, () => console.log(`Auth server is running on port ${PORT}`));
     } catch (err) {
