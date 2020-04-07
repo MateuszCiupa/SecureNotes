@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
 import { Paper, TextField, Typography, Button } from '@material-ui/core';
 import useStyles from 'assets/useStyles';
+import { validatePassword } from '../assets/validateInput';
 
-export default () => {
+export default ({ match: { params: { userId, token } } }) => {
     const classes = useStyles();
 
-    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [passErr, setPassErr] = useState(false);
 
     const handleSubmit = async e => {
         e.preventDefault();
 
-        if (email) {
-            const response = await fetch('/api/email/reset/password', {
-                method: 'POST',
-                body: JSON.stringify({ email }),
+        if (validatePassword(password) && !passErr) {
+            const response = await fetch(`/api/email/reset/password/${userId}/${token}`, {
+                method: 'PATCH',
+                body: JSON.stringify({ password }),
                 headers: {
                     'Content-Type': 'application/json'
                 }
@@ -21,8 +23,8 @@ export default () => {
             const data = await response.json();
             console.log(data);
         } else {
-            console.log('No email provided!');
-        }
+
+        }        
     };
 
     return (
@@ -34,11 +36,27 @@ export default () => {
             <form className={classes.form} onSubmit={handleSubmit}>
                 <TextField
                     className={classes.text_field}
+                    type="password"
                     required
-                    label="Email"
+                    label="New password"
                     margin="normal"
                     autoFocus
-                    onChange={e => setEmail(e.target.value)}
+                    onChange={e => setPassword(e.target.value)}
+                />
+
+                <TextField
+                    className={classes.text_field}
+                    type="password"
+                    required
+                    label="Repeat password"
+                    margin="normal"
+                    autoFocus
+                    error={passErr}
+                    helperText={passErr ? 'Passwords should be the same!' : ''}
+                    onChange={e => {
+                        if (e.target.value !== password) setPassErr(true);
+                        else setPassErr(false);
+                    }}
                 />
                 
                 <div className={classes.weird_buttons}>
@@ -47,7 +65,7 @@ export default () => {
                         color="primary"
                         type="submit"
                     >
-                        Send request
+                        Change password
                     </Button>
                 </div>
             </form>

@@ -1,6 +1,15 @@
 import React from 'react';
-import { Switch, BrowserRouter as Router } from 'react-router-dom';
-import { Login, Register, Home, AddPost, Profile, ResetPassword, ChangePassword } from './layouts';
+import { Switch, BrowserRouter as Router, Route } from 'react-router-dom';
+import { 
+    Login, 
+    Register, 
+    Home, 
+    AddPost, 
+    Profile, 
+    ResetPassword, 
+    ChangePassword, 
+    ResetPasswordNew 
+} from './layouts';
 import { LoginHeader, MainHeader } from './layouts/components';
 import { connect } from 'react-redux';
 import { AuthRoute, ProtectedRoute } from './util/route';
@@ -11,10 +20,11 @@ const mapStateToProps = ({ session: { userId } }) => ({
 
 const App = ({ loggedIn }) => (
     <Router>
-        { loggedIn ? <LoginHeader /> : <MainHeader />}
+        {loggedIn ? <LoginHeader /> : <MainHeader />}
         <Switch>
             <AuthRoute path='/login' component={Login} />
-            <AuthRoute path='/reset/password' component={ResetPassword} />
+            <Route exact path='/reset/password' component={ResetPassword} />
+            <Route exact path='/reset/password/:userId/:token' component={ResetPasswordNew} />
             <AuthRoute path='/register' component={Register} />
             <ProtectedRoute path='/post' component={AddPost} />
             <ProtectedRoute path='/profile' component={Profile} />

@@ -11,12 +11,13 @@ import {
     colorByEntropy, 
     validateLogin, 
     validateName, 
-    validatePassword 
+    validatePassword,
+    validateEmail, 
+    actualPassEntropy
 } from 'assets/validateInput';
 
 const mapStateToProps = ({ error, session }) => ({ 
-    error,
-    session
+    error
 });
 
 const mapDispatchToProps = dispatch => ({ 
@@ -25,14 +26,7 @@ const mapDispatchToProps = dispatch => ({
     receiveErrors: message => dispatch(receiveErrors({ message }))
 });
 
-const Register = ({ 
-    error, 
-    register, 
-    clearErrors, 
-    session, 
-    history,
-    receiveErrors
-}) => {
+const Register = ({ error, register, clearErrors, receiveErrors }) => {
     useEffect(() => {
         if (error) setOpen(true);
     }, [error]);
@@ -42,12 +36,9 @@ const Register = ({
         clearErrors();
     }, [clearErrors]);
 
-    useEffect(() => {
-        if (session.user) history.push('/login');
-    }, [session.user, history]);
-
     const classes = useStyles();
 
+    const [email, setEmail] = useState('');
     const [open, setOpen] = useState(false);
     const [passScore, setPassScore] = useState(0);
     const [firstname, setFirstname] = useState('');
@@ -65,9 +56,10 @@ const Register = ({
             validateName(lastname) && 
             validateLogin(login) && 
             validatePassword(password) && 
+            validateEmail(email) &&
             !passErr
         ) {
-            register({ firstname, lastname, login, password });
+            register({ firstname, lastname, login, password, email });
         } else {
             receiveErrors('Correct your input.');
             setOpen(true);
@@ -146,7 +138,7 @@ const Register = ({
                     label="Password"
                     margin="normal"
                     type="password"
-                    helperText="At least 'good', min 8 and max 1024 characters long."
+                    helperText="Min 8 and max 1024 characters long."
                     onChange={e => {
                         setPassword(e.target.value)
                         setPassScore(passEntropy(e.target.value))
@@ -166,7 +158,9 @@ const Register = ({
                     <Typography variant="subtitle2" >
                         {password && (
                             <>
-                                <strong>Password strength:</strong> {colorByEntropy(passScore)}
+                                <strong>Characters diversity:</strong> {colorByEntropy(passScore)}
+                                &nbsp; &nbsp; &nbsp;
+                                <strong>Bits of entropy (password strength):</strong> {actualPassEntropy(password)}
                             </>
                         )}
                     </Typography>
@@ -186,6 +180,17 @@ const Register = ({
                         if (e.target.value !== password) setPassErr(true)
                         else setPassErr(false)
                     }}
+                />
+
+                <TextField
+                    required
+                    className={classes.text_field}
+                    value={email}
+                    label="Email"
+                    margin="normal"
+                    type="email"
+                    helperText="Min 4 and max 256 characters long."
+                    onChange={e => setEmail(e.target.value)}
                 />
 
                 <div className={classes.weird_buttons}>

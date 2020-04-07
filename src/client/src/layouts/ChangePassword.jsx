@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Paper, Typography, Button, TextField } from '@material-ui/core';
 import useStyles from 'assets/useStyles';
+import { validatePassword } from '../assets/validateInput';
 
 export default () => {
     const classes = useStyles();
@@ -12,7 +13,7 @@ export default () => {
     const handleSubmit = async event => {
         event.preventDefault();
 
-        if (newPassword === repeatPass) {
+        if (newPassword === repeatPass && validatePassword(newPassword)) {
             const response = await fetch('/api/user/pass', {
                 method: 'POST',
                 headers: {

@@ -1,5 +1,8 @@
 const namePattern = /^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]*$/;
 const loginPattern = /[A-Za-z0-9]+$/;
+const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
+const contentPattern = /[A-Za-z0-9\sĄĆĘŁŃÓŚŹŻąćęłńóśźż,.:'";?()]+$/;
+const titlePattern = /[A-Za-z0-9\s]+$/;
 
 export const validateName = input => {
     if (input.length < 2 || input.length > 100 || !namePattern.test(input)) return false;
@@ -7,13 +10,18 @@ export const validateName = input => {
 };
 
 export const validatePassword = input => {
-    if (input.length < 8 || input.length > 1024 || passEntropy(input) < 0.75) return false;
+    if (input.length < 8 || input.length > 1024) return false;
     return true; 
 };
 
 export const validateLogin = input => {
     if (input.length < 4 || input.length > 20 || !loginPattern.test(input)) return false;
     return true;
+};
+
+export const validateEmail = input => {
+    if (input.length < 4 || input.length > 256 || !emailPattern.test(input)) return false;
+    return true; 
 };
 
 export const passEntropy = pass => {
@@ -36,10 +44,16 @@ export const colorByEntropy = entropy => {
     return 'strong';
 };
 
-export const validateTitle = input => {
+export const actualPassEntropy = pass => {
+    return pass.length * Math.log2(255);
+};
 
+export const validateTitle = input => {
+    if (input.length < 2 || input.length > 100 || !titlePattern.test(input)) return false;
+    return true;
 };
 
 export const validateContent = input => {
-
+    if (input.length > 2048 || !contentPattern.test(input)) return false;
+    return true;
 };

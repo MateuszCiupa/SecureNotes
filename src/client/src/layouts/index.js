@@ -6,6 +6,7 @@ import ChangeEmail from './ChangeEmail';
 import ChangePassword from './ChangePassword';
 import ResetPassword from './ResetPassword';
 import AddPost from './AddPost';
+import ResetPasswordNew from './ResetPasswordNew';
 
 export { 
     Login, 
@@ -15,5 +16,6 @@ export {
     Profile, 
     ChangeEmail,
     ChangePassword,
-    ResetPassword
+    ResetPassword,
+    ResetPasswordNew
 };

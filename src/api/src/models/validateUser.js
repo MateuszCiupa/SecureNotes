@@ -1,6 +1,7 @@
 import Joi from '@hapi/joi';
 
 const namePattern = /^[A-ZĄĆĘŁŃÓŚŹŻ][a-ząćęłńóśźż]*$/;
+const emailPattern = /^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$/;
 
 const usernameSchemaObj = {
     login: Joi.string()
@@ -29,6 +30,11 @@ const registerSchebaObj = {
         .pattern(namePattern)
         .min(2)
         .max(100)
+        .required(),
+    email: Joi.string()
+        .pattern(emailPattern)
+        .min(4)
+        .max(256)
         .required()
 };
 

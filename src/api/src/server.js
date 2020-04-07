@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import connectStore from 'connect-mongo';
 import userRouter from './routes/auth';
 import postRouter from './routes/post';
+import emailRouter from './routes/email';
 require('dotenv').config();
 
 const {
@@ -17,7 +18,7 @@ const {
     try {
         await mongoose.connect(
             DB_CONNECTION, 
-            {useNewUrlParser: true, useUnifiedTopology: true}, 
+            {useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false}, 
             err => {
                 if (err) console.log(err);
                 else console.log('Auth server connected to db')
@@ -49,6 +50,7 @@ const {
         app.use('/api', apiRouter);
         apiRouter.use('/user', userRouter);
         apiRouter.use('/post', postRouter);
+        apiRouter.use('/email', emailRouter);
 
         app.listen(PORT, () => console.log(`Auth server is running on port ${PORT}`));
     } catch (err) {
